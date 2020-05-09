@@ -1,3 +1,4 @@
 .env
 farto.yaml
+site/*
 terraform/.terraform/*

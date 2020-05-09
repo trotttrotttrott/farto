@@ -1,12 +1,18 @@
 package farto
 
 import (
-	"fmt"
+	"html/template"
+	"os"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 )
+
+type site struct {
+	Title  string
+	Fartos []string
+}
 
 func SiteGenerate() error {
 	c, err := getConfig()
@@ -24,8 +30,22 @@ func SiteGenerate() error {
 	if err != nil {
 		return err
 	}
-
-	fmt.Println(b)
-
-	return nil
+	s := site{
+		Title:  "Farto",
+		Fartos: b,
+	}
+	tmpl, err := template.ParseFiles("pkg/farto/templates/index.html")
+	if err != nil {
+		return err
+	}
+	err = os.MkdirAll("site", 0755)
+	if err != nil {
+		return err
+	}
+	f, err := os.Create("site/index.html")
+	if err != nil {
+		return err
+	}
+	err = tmpl.Execute(f, s)
+	return err
 }
