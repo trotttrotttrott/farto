@@ -18,11 +18,11 @@ func (m *mockS3Client) ListObjectsV2(input *s3.ListObjectsV2Input) (*s3.ListObje
 
 func TestWalkBucket(t *testing.T) {
 	mockSvc := &mockS3Client{}
-	b, err := walkBucket(mockSvc, "farto.cloud", "test")
+	keys, err := walkBucket(mockSvc, "farto.cloud", "test")
 	if err != nil {
 		t.Errorf("Unexpected error walking bucket: %s", err)
 	}
-	if b != "farto.cloud" {
-		t.Errorf("Unexpected return value: %s", b)
+	if len(keys) != 0 {
+		t.Errorf("Unexpected number of keys: %d", len(keys))
 	}
 }

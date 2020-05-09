@@ -1,15 +1,12 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3iface"
 )
 
-func walkBucket(svc s3iface.S3API, bucket string, prefix string) (string, error) {
-
+func walkBucket(svc s3iface.S3API, bucket string, prefix string) (keys []string, err error) {
 	resp, err := svc.ListObjectsV2(
 		&s3.ListObjectsV2Input{
 			Bucket: aws.String(bucket),
@@ -17,12 +14,10 @@ func walkBucket(svc s3iface.S3API, bucket string, prefix string) (string, error)
 		},
 	)
 	if err != nil {
-		return "", err
+		return
 	}
-
 	for _, item := range resp.Contents {
-		fmt.Println(*item.Key)
+		keys = append(keys, *item.Key)
 	}
-
-	return bucket, nil
+	return
 }
