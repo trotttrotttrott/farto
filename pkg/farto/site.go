@@ -51,5 +51,17 @@ func SiteGenerate() error {
 }
 
 func SitePublish() error {
+	c, err := getConfig()
+	if err != nil {
+		return err
+	}
+	sess, err := session.NewSession(&aws.Config{
+		Region: aws.String(c.S3Region)},
+	)
+	if err != nil {
+		return err
+	}
+	svc := s3.New(sess)
+	upload(svc, c.S3Bucket, c.S3Prefix, "site")
 	return nil
 }
