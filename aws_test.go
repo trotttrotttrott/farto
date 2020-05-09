@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"testing"
 
 	"github.com/aws/aws-sdk-go/service/s3"
@@ -13,18 +12,17 @@ type mockS3Client struct {
 }
 
 func (m *mockS3Client) ListObjectsV2(input *s3.ListObjectsV2Input) (*s3.ListObjectsV2Output, error) {
-	return nil, errors.New("barf")
+	out := s3.ListObjectsV2Output{}
+	return &out, nil
 }
 
 func TestWalkBucket(t *testing.T) {
-
 	mockSvc := &mockS3Client{}
-
-	b, err := walkBucket(mockSvc, "farto.cloud")
+	b, err := walkBucket(mockSvc, "farto.cloud", "test")
 	if err != nil {
 		t.Errorf("Unexpected error walking bucket: %s", err)
 	}
-	if b != "" {
-		t.Errorf("Shiiiit: %s", b)
+	if b != "farto.cloud" {
+		t.Errorf("Unexpected return value: %s", b)
 	}
 }
