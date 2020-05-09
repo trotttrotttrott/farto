@@ -49,3 +49,7 @@ func SiteGenerate() error {
 	err = tmpl.Execute(f, s)
 	return err
 }
+
+func SitePublish() error {
+	return nil
+}

@@ -20,6 +20,8 @@ func main() {
 	}
 }
 
+// site commands
+
 func siteCmd() *cli.Command {
 	cmd := &cli.Command{
 		Use:   "site",
@@ -27,6 +29,7 @@ func siteCmd() *cli.Command {
 	}
 	cmd.AddCommand(
 		siteGenerateCmd(),
+		sitePublishCmd(),
 	)
 	return cmd
 }
@@ -38,6 +41,17 @@ func siteGenerateCmd() *cli.Command {
 	}
 	cmd.Run = func(cmd *cli.Command, args []string) error {
 		return farto.SiteGenerate()
+	}
+	return cmd
+}
+
+func sitePublishCmd() *cli.Command {
+	cmd := &cli.Command{
+		Use:   "publish",
+		Short: "Publish static site to S3.",
+	}
+	cmd.Run = func(cmd *cli.Command, args []string) error {
+		return farto.SitePublish()
 	}
 	return cmd
 }
