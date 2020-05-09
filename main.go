@@ -25,11 +25,22 @@ func main() {
 		Short: "Farto",
 	}
 	rootCmd.AddCommand(
-		generateCmd(),
+		siteCmd(),
 	)
 	if err := rootCmd.Execute(); err != nil {
 		log.Fatalln(err)
 	}
+}
+
+func siteCmd() *cli.Command {
+	cmd := &cli.Command{
+		Use:   "site",
+		Short: "Commands related to the static site.",
+	}
+	cmd.AddCommand(
+		generateCmd(),
+	)
+	return cmd
 }
 
 func getConfig() (c config, err error) {
