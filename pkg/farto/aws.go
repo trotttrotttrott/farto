@@ -1,12 +1,14 @@
 package farto
 
 import (
-	"fmt"
+	"os"
+	"path"
+	"path/filepath"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3iface"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
-	"os"
 )
 
 func walkBucket(svc s3iface.S3API, bucket string, prefix string) (keys []string, err error) {
@@ -27,21 +29,31 @@ func walkBucket(svc s3iface.S3API, bucket string, prefix string) (keys []string,
 
 func upload(svc s3iface.S3API, bucket string, prefix string, localDir string) error {
 
-	f, err := os.Open(fmt.Sprintf("%s/index.html", localDir))
-	if err != nil {
-		return err
-	}
-
 	uploader := s3manager.NewUploaderWithClient(svc)
-	objects := []s3manager.BatchUploadObject{
-		{
-			Object: &s3manager.UploadInput{
-				Bucket: aws.String(bucket),
-				Key:    aws.String(fmt.Sprintf("%s/%s", prefix, "index.html")),
-				Body:   f,
-			},
-		},
-	}
+	var objects []s3manager.BatchUploadObject
+
+	err := filepath.Walk(localDir, func(p string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() {
+			f, err := os.Open(p)
+			if err != nil {
+				return err
+			}
+			objects = append(
+				objects,
+				s3manager.BatchUploadObject{
+					Object: &s3manager.UploadInput{
+						Bucket: aws.String(bucket),
+						Key:    aws.String(path.Join(prefix, p)),
+						Body:   f,
+					},
+				},
+			)
+		}
+		return nil
+	})
 
 	iter := &s3manager.UploadObjectsIterator{Objects: objects}
 	err = uploader.UploadWithIterator(aws.BackgroundContext(), iter)
