@@ -3,6 +3,7 @@ package farto
 import (
 	"html/template"
 	"os"
+	"path"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -11,7 +12,7 @@ import (
 
 type site struct {
 	Title  string
-	Fartos []string
+	Fartos map[string][]string
 }
 
 func SiteGenerate() error {
@@ -26,13 +27,22 @@ func SiteGenerate() error {
 		return err
 	}
 	svc := s3.New(sess)
-	b, err := walkBucket(svc, c.S3Bucket, c.S3Prefix)
+	keys, err := walkBucket(svc, c.S3Bucket, c.S3Prefix)
 	if err != nil {
 		return err
 	}
+
+	fartos := map[string][]string{}
+	for _, key := range keys {
+		d, f := path.Split(key)
+		if d != "/site/" && path.Ext(f) != "" {
+			fartos[d] = append(fartos[d], key)
+		}
+	}
+
 	s := site{
 		Title:  "Farto",
-		Fartos: b,
+		Fartos: fartos,
 	}
 	tmpl, err := template.ParseFiles("pkg/farto/templates/index.html")
 	if err != nil {

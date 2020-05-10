@@ -5,6 +5,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3"
@@ -23,7 +24,7 @@ func walkBucket(svc s3iface.S3API, bucket string, prefix string) (keys []string,
 		return
 	}
 	for _, item := range resp.Contents {
-		keys = append(keys, *item.Key)
+		keys = append(keys, strings.TrimPrefix(*item.Key, prefix))
 	}
 	return
 }

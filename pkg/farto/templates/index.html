@@ -4,10 +4,12 @@
     <title>{{.Title}}</title>
   </head>
   <body>
-    <ul>
-      {{range .Fartos}}
-      <li>{{.}}</li>
-      {{end}}
-    <ul>
+    <h1>{{.Title}}</h1>
+    {{range $folder, $paths := .Fartos}}
+    <h2>{{$folder}}</h2>
+    {{range $paths}}
+    <img src="{{.}}" style="height: 150px;" />
+    {{end}}
+    {{end}}
   </body>
 </html>
