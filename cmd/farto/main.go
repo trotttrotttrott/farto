@@ -14,6 +14,7 @@ func main() {
 	}
 	rootCmd.AddCommand(
 		siteCmd(),
+		fartosCmd(),
 	)
 	if err := rootCmd.Execute(); err != nil {
 		log.Fatalln(err)
@@ -52,6 +53,31 @@ func sitePublishCmd() *cli.Command {
 	}
 	cmd.Run = func(cmd *cli.Command, args []string) error {
 		return farto.SitePublish()
+	}
+	return cmd
+}
+
+// fartos commands
+
+func fartosCmd() *cli.Command {
+	cmd := &cli.Command{
+		Use:   "fartos",
+		Short: "Commands related to farto management.",
+	}
+	cmd.AddCommand(
+		fartosNormalizeCmd(),
+	)
+	return cmd
+}
+
+func fartosNormalizeCmd() *cli.Command {
+	cmd := &cli.Command{
+		Use:   "normalize",
+		Short: "Create normalized versions of your fartos.",
+	}
+	cmd.Run = func(cmd *cli.Command, args []string) error {
+		p := args[0]
+		return farto.FartosNormalize(p)
 	}
 	return cmd
 }
