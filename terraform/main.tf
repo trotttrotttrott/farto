@@ -25,6 +25,13 @@ resource "aws_cloudfront_origin_access_identity" "farto_cloud" {
   comment = "access-identity-farto.cloud/test"
 }
 
+resource "dnsimple_record" "test" {
+  domain = "farto.cloud"
+  name   = "test"
+  value  = "df1epdavhi6f7.cloudfront.net"
+  type   = "CNAME"
+}
+
 resource "aws_cloudfront_distribution" "farto_cloud" {
 
   origin {
