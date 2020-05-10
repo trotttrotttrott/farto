@@ -25,3 +25,14 @@ module "cloudfront_test" {
   origin_path        = "/test"
   subdomain          = "test"
 }
+
+module "cloudfront_mom" {
+
+  source = "./modules/cloudfront"
+
+  aliases            = ["mom.farto.cloud"]
+  bucket_domain_name = aws_s3_bucket.farto_cloud.bucket_domain_name
+  origin_id          = "S3-farto.cloud/mom"
+  origin_path        = "/mom"
+  subdomain          = "mom"
+}
