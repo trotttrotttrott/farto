@@ -24,7 +24,13 @@ func walkBucket(svc s3iface.S3API, bucket string, prefix string) (keys []string,
 		return
 	}
 	for _, item := range resp.Contents {
-		keys = append(keys, strings.TrimPrefix(*item.Key, prefix))
+		key := strings.TrimPrefix(*item.Key, prefix)
+		d, f := path.Split(key)
+		if d != "/site/" &&
+			path.Ext(f) != "" &&
+			!strings.Contains(d, ".farto.") {
+			keys = append(keys, key)
+		}
 	}
 	return
 }

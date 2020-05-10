@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"os"
 	"path"
+	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -35,9 +36,8 @@ func SiteGenerate() error {
 	fartos := map[string][]string{}
 	for _, key := range keys {
 		d, f := path.Split(key)
-		if d != "/site/" && path.Ext(f) != "" {
-			fartos[d] = append(fartos[d], key)
-		}
+		d = strings.Trim(d, "/")
+		fartos[d] = append(fartos[d], f)
 	}
 
 	s := site{

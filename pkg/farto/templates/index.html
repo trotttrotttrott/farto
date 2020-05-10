@@ -6,9 +6,9 @@
   <body>
     <h1>{{.Title}}</h1>
     {{range $folder, $paths := .Fartos}}
-    <h2>{{$folder}}</h2>
+    <h2>/{{$folder}}/</h2>
     {{range $paths}}
-    <img src="{{.}}" style="height: 150px;" />
+    <img src="/{{$folder}}.farto.n.t/{{.}}.jpg" />
     {{end}}
     {{end}}
   </body>
