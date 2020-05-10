@@ -78,24 +78,6 @@ resource "aws_cloudfront_distribution" "farto_cloud" {
   }
 
   ordered_cache_behavior {
-    path_pattern           = "*"
-    allowed_methods        = ["GET", "HEAD"]
-    cached_methods         = ["GET", "HEAD"]
-    target_origin_id       = local.origin_id
-    viewer_protocol_policy = "redirect-to-https"
-    forwarded_values {
-      query_string = false
-      cookies {
-        forward = "none"
-      }
-    }
-    lambda_function_association {
-      event_type = "viewer-request"
-      lambda_arn = "arn:aws:lambda:us-east-1:081549132651:function:fartoCloudAuth:2"
-    }
-  }
-
-  ordered_cache_behavior {
     path_pattern           = "/site/*"
     allowed_methods        = ["GET", "HEAD"]
     cached_methods         = ["GET", "HEAD"]
@@ -107,6 +89,10 @@ resource "aws_cloudfront_distribution" "farto_cloud" {
       cookies {
         forward = "none"
       }
+    }
+    lambda_function_association {
+      event_type = "viewer-request"
+      lambda_arn = "arn:aws:lambda:us-east-1:081549132651:function:fartoCloudAuth:2"
     }
   }
 }
