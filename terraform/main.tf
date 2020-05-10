@@ -38,7 +38,7 @@ resource "aws_cloudfront_distribution" "farto_cloud" {
   enabled             = true
   is_ipv6_enabled     = true
   default_root_object = "site/index.html"
-  price_class         = "PriceClass_All"
+  price_class         = "PriceClass_100"
 
   origin {
     domain_name = aws_s3_bucket.farto_cloud.bucket_domain_name
