@@ -21,12 +21,19 @@ farto fartos normalize <path>
 ```
 
 Create normalized versions of your fartos. As in, create new image files from
-the originals that are a similar size and same encoding.
+the originals that are a consistent size and format.
 
 `path` must be local. The images will be created in sibling directories:
 
-* `<path>-n`
-* `<path>-n-sm`
+* `<path>.farto.n`
+* `<path>.farto.n.t`
+
+```
+farto fartos upload <path>
+```
+
+Uploads fartos in `path` and also uploads normalized sibling directories if
+present.
 
 ## Config
 
