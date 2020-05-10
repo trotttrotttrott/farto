@@ -1,6 +1,7 @@
 package farto
 
 import (
+	"net/http"
 	"os"
 	"path"
 	"path/filepath"
@@ -41,13 +42,20 @@ func upload(svc s3iface.S3API, bucket string, prefix string, localDir string) er
 			if err != nil {
 				return err
 			}
+			buffer := make([]byte, 512)
+			_, err = f.Read(buffer)
+			if err != nil {
+				return err
+			}
+			contentType := http.DetectContentType(buffer)
 			objects = append(
 				objects,
 				s3manager.BatchUploadObject{
 					Object: &s3manager.UploadInput{
-						Bucket: aws.String(bucket),
-						Key:    aws.String(path.Join(prefix, p)),
-						Body:   f,
+						Bucket:      aws.String(bucket),
+						Key:         aws.String(path.Join(prefix, p)),
+						Body:        f,
+						ContentType: &contentType,
 					},
 				},
 			)
