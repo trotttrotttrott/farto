@@ -2,11 +2,14 @@ package farto
 
 import (
 	"fmt"
+	"image"
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 
 	"github.com/disintegration/imaging"
+	"github.com/jdeng/goheif"
 )
 
 func FartosNormalize(p string) error {
@@ -29,9 +32,22 @@ func FartosNormalize(p string) error {
 			return err
 		}
 		if !info.IsDir() {
-			src, err := imaging.Open(p)
-			if err != nil {
-				return err
+			var src image.Image
+			if strings.ToLower(path.Ext(info.Name())) == ".heic" {
+				f, err := os.Open(p)
+				if err != nil {
+					return err
+				}
+				src, err = goheif.Decode(f)
+				if err != nil {
+					return err
+				}
+				src = imaging.Rotate270(src)
+			} else {
+				src, err = imaging.Open(p)
+				if err != nil {
+					return err
+				}
 			}
 			for size, dir := range versions {
 				img := imaging.Resize(src, 0, size, imaging.Lanczos)
