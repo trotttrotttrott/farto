@@ -6,9 +6,12 @@ import (
 )
 
 type config struct {
-	S3Region string `yaml:"s3Region"`
-	S3Bucket string `yaml:"s3Bucket"`
-	S3Prefix string `yaml:"s3Prefix"`
+	S3Region     string `yaml:"s3Region"`
+	S3Bucket     string `yaml:"s3Bucket"`
+	S3Prefix     string `yaml:"s3Prefix"`
+	SiteTitle    string `yaml:"siteTitle"`
+	SiteHeadline string `yaml:"siteHeadline"`
+	SiteCopy     string `yaml:"siteCopy"`
 }
 
 func getConfig() (c config, err error) {

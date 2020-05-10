@@ -12,8 +12,10 @@ import (
 )
 
 type site struct {
-	Title  string
-	Fartos map[string][]string
+	Title    string
+	Headline string
+	Copy     string
+	Fartos   map[string][]string
 }
 
 func SiteGenerate() error {
@@ -41,8 +43,10 @@ func SiteGenerate() error {
 	}
 
 	s := site{
-		Title:  "Farto",
-		Fartos: fartos,
+		Title:    c.SiteTitle,
+		Headline: c.SiteHeadline,
+		Copy:     c.SiteCopy,
+		Fartos:   fartos,
 	}
 	tmpl, err := template.ParseFiles("pkg/farto/templates/index.html")
 	if err != nil {
