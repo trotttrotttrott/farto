@@ -48,6 +48,10 @@ func upload(svc s3iface.S3API, bucket string, prefix string, localDir string) er
 				return err
 			}
 			contentType := http.DetectContentType(buffer)
+			_, err = f.Seek(0, 0)
+			if err != nil {
+				return err
+			}
 			objects = append(
 				objects,
 				s3manager.BatchUploadObject{
