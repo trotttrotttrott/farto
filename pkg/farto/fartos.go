@@ -11,15 +11,17 @@ import (
 
 func FartosNormalize(p string) error {
 
-	sizes := []int{800, 200}
-	dirs := map[int]string{}
-	for _, size := range sizes {
-		dir := fmt.Sprintf("%s.farto.%d", path.Clean(p), size)
+	versions := map[int]string{
+		800: "n",   // normalized
+		200: "n.t", // " thumbnail
+	}
+	for size, dirSuffix := range versions {
+		dir := fmt.Sprintf("%s.farto.%s", path.Clean(p), dirSuffix)
 		err := os.MkdirAll(dir, 0755)
 		if err != nil {
 			return err
 		}
-		dirs[size] = dir
+		versions[size] = dir
 	}
 
 	err := filepath.Walk(p, func(p string, info os.FileInfo, err error) error {
@@ -31,9 +33,9 @@ func FartosNormalize(p string) error {
 			if err != nil {
 				return err
 			}
-			for _, size := range sizes {
+			for size, dir := range versions {
 				img := imaging.Resize(src, 0, size, imaging.Lanczos)
-				err = imaging.Save(img, path.Join(dirs[size], fmt.Sprintf("%s.jpg", info.Name())))
+				err = imaging.Save(img, path.Join(dir, fmt.Sprintf("%s.jpg", info.Name())))
 				if err != nil {
 					return err
 				}
