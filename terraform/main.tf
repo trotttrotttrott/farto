@@ -47,7 +47,7 @@ resource "aws_cloudfront_distribution" "farto_cloud" {
   aliases             = local.aliases
   enabled             = true
   is_ipv6_enabled     = true
-  default_root_object = "index.html"
+  default_root_object = "site/index.html"
   price_class         = "PriceClass_All"
 
   default_cache_behavior {
