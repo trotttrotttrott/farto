@@ -66,6 +66,7 @@ func fartosCmd() *cli.Command {
 	}
 	cmd.AddCommand(
 		fartosNormalizeCmd(),
+		fartosUploadCmd(),
 	)
 	return cmd
 }
@@ -78,6 +79,18 @@ func fartosNormalizeCmd() *cli.Command {
 	cmd.Run = func(cmd *cli.Command, args []string) error {
 		p := args[0]
 		return farto.FartosNormalize(p)
+	}
+	return cmd
+}
+
+func fartosUploadCmd() *cli.Command {
+	cmd := &cli.Command{
+		Use:   "upload",
+		Short: "Upload original and normalized photos to S3.",
+	}
+	cmd.Run = func(cmd *cli.Command, args []string) error {
+		p := args[0]
+		return farto.FartosUpload(p)
 	}
 	return cmd
 }

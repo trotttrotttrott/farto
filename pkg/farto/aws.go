@@ -53,12 +53,14 @@ func upload(svc s3iface.S3API, bucket string, prefix string, localDir string) er
 			if err != nil {
 				return err
 			}
+			dir := filepath.Base(filepath.Dir(p))
+			key := path.Join(prefix, dir, info.Name())
 			objects = append(
 				objects,
 				s3manager.BatchUploadObject{
 					Object: &s3manager.UploadInput{
 						Bucket:      aws.String(bucket),
-						Key:         aws.String(path.Join(prefix, p)),
+						Key:         aws.String(key),
 						Body:        f,
 						ContentType: &contentType,
 					},

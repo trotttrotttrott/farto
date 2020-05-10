@@ -8,6 +8,10 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
+
 	"github.com/disintegration/imaging"
 	"github.com/jdeng/goheif"
 )
@@ -60,4 +64,29 @@ func FartosNormalize(p string) error {
 		return nil
 	})
 	return err
+}
+
+func FartosUpload(p string) error {
+	c, err := getConfig()
+	if err != nil {
+		return err
+	}
+	sess, err := session.NewSession(&aws.Config{
+		Region: aws.String(c.S3Region)},
+	)
+	if err != nil {
+		return err
+	}
+	svc := s3.New(sess)
+	for _, dir := range []string{p, fmt.Sprintf("%s.farto.n", p), fmt.Sprintf("%s.farto.n.t", p)} {
+		_, err := os.Stat(dir)
+		if err != nil {
+			return err
+		}
+		err = upload(svc, c.S3Bucket, c.S3Prefix, dir)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
