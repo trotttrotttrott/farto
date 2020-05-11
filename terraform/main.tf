@@ -10,6 +10,11 @@ provider "aws" {
   region = "us-west-2"
 }
 
+provider "aws" {
+  region = "us-east-1"
+  alias  = "us_east_1"
+}
+
 resource "aws_s3_bucket" "farto_cloud" {
   bucket = "farto.cloud"
   acl    = "private"
@@ -25,6 +30,18 @@ resource "aws_iam_role" "farto_cloud_lambda" {
   assume_role_policy = data.aws_iam_policy_document.farto_cloud_lambda.json
   path               = "/service-role/"
 }
+
+# Use this when you can figure out how to set dynamic basic auth creds.
+#
+# resource "aws_lambda_function" "farto_cloud_auth" {
+#   provider         = aws.us_east_1
+#   function_name    = "fartoCloudAuth"
+#   filename         = "fartoCloudAuth.zip"
+#   role             = aws_iam_role.farto_cloud_lambda.arn
+#   handler          = "index.handler"
+#   source_code_hash = filebase64sha256("fartoCloudAuth.zip")
+#   runtime          = "nodejs12.x"
+# }
 
 module "cloudfront_mom" {
 
