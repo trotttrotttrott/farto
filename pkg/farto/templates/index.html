@@ -7,19 +7,35 @@
     <title>{{.Title}}</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/foundation-sites@6.6.3/dist/css/foundation.min.css" integrity="sha256-ogmFxjqiTMnZhxCqVmcqTvjfe1Y/ec4WaRj/aQPvn+I=" crossorigin="anonymous">
     <style>
-      body { text-align: center; }
+      html { height: 100%; }
+      img { margin-bottom: 5px; }
+      body {
+        text-align: center;
+        height: 100%;
+        padding-top: 70px;
+      }
+      .folder {
+        padding: 20px 0;
+      }
+      .folder h4 {
+        text-align: left;
+        margin-left: 50px;
+      }
+      {{.Style}}
     </style>
   </head>
   <body>
     <h1>{{.Headline}}</h1>
     <p>{{.Copy}}</p>
     {{range $folder, $paths := .Fartos}}
-    <h2>/{{$folder}}/</h2>
-    {{range $paths}}
-    <a href="/{{$folder}}.farto.n/{{.}}.jpg" target="_blank">
-      <img src="/{{$folder}}.farto.n.t/{{.}}.jpg" />
-    </a>
-    {{end}}
+    <div class="folder">
+      <h4>{{$folder}}</h4>
+      {{range $paths}}
+      <a href="/{{$folder}}.farto.n/{{.}}.jpg" target="_blank">
+        <img src="/{{$folder}}.farto.n.t/{{.}}.jpg" />
+      </a>
+      {{end}}
+    </div>
     {{end}}
   </body>
 </html>
