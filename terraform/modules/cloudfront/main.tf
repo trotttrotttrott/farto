@@ -73,4 +73,3 @@ resource "aws_cloudfront_distribution" "farto_cloud" {
     }
   }
 }
-
