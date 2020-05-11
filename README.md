@@ -37,16 +37,19 @@ present.
 
 ## Config
 
-TODO
+Expects `farto.yaml` file.
+
+```yaml
+s3Region:
+s3Bucket:
+s3Prefix:
+siteTitle: Farto # HTML title field
+siteHeadline: A Farto Site # Content for h1 tag at top of page
+siteCopy: |- # Content for p tag right below h1 tag
+  Welcome to this Farto site!
+```
 
 ## Access Control
 
-Basic auth with Lambda & Cloudfront. Links:
-
-* [Blog post](https://medium.com/hackernoon/serverless-password-protecting-a-static-website-in-an-aws-s3-bucket-bfaaa01b8666)
-* [IAM permissions](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-edge-permissions.html)
-
-## Cost Considerations
-
-[S3 is pretty cheap](https://aws.amazon.com/s3/pricing/). At the time of writing
-this, at most it's $0.023 per GB a month. A dollar and change for 100 GB a month.
+Basic auth with Lambda & Cloudfront. Got the idea from [this blog
+post](https://medium.com/hackernoon/serverless-password-protecting-a-static-website-in-an-aws-s3-bucket-bfaaa01b8666).
