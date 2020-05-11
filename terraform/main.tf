@@ -10,34 +10,6 @@ provider "aws" {
   region = "us-west-2"
 }
 
-data "aws_iam_policy_document" "farto_cloud" {
-
-  policy_id = "PolicyForCloudFrontPrivateContent"
-
-  dynamic "statement" {
-
-    for_each = {
-      mom  = module.cloudfront_mom.origin_access_identity_iam_arn,
-      test = module.cloudfront_test.origin_access_identity_iam_arn,
-    }
-
-    content {
-      actions = [
-        "s3:GetObject",
-      ]
-      resources = [
-        "arn:aws:s3:::farto.cloud/${statement.key}/*",
-      ]
-      principals {
-        type = "AWS"
-        identifiers = [
-          statement.value,
-        ]
-      }
-    }
-  }
-}
-
 resource "aws_s3_bucket" "farto_cloud" {
   bucket = "farto.cloud"
   acl    = "private"
@@ -45,7 +17,13 @@ resource "aws_s3_bucket" "farto_cloud" {
 
 resource "aws_s3_bucket_policy" "farto_cloud" {
   bucket = aws_s3_bucket.farto_cloud.id
-  policy = data.aws_iam_policy_document.farto_cloud.json
+  policy = data.aws_iam_policy_document.farto_cloud_s3.json
+}
+
+resource "aws_iam_role" "farto_cloud_lambda" {
+  name               = "fartoCloudAuth-role-6drno30z"
+  assume_role_policy = data.aws_iam_policy_document.farto_cloud_lambda.json
+  path               = "/service-role/"
 }
 
 module "cloudfront_mom" {
