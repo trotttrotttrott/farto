@@ -41,7 +41,10 @@ TODO
 
 ## Access Control
 
-Lambda & Cloudfront?
+Basic auth with Lambda & Cloudfront. Links:
+
+* [Blog post](https://medium.com/hackernoon/serverless-password-protecting-a-static-website-in-an-aws-s3-bucket-bfaaa01b8666)
+* [IAM permissions](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-edge-permissions.html)
 
 ## Cost Considerations
 
