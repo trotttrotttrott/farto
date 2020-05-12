@@ -27,8 +27,8 @@ const siteTmpl = `<!doctype html>
     <h1>{{.Headline}}</h1>
     <p>{{.Copy}}</p>
     {{range $folder, $paths := .Fartos}}
-    <div style="padding: 20px 0;">
-      <h4 style="text-align: left; margin-left: 50px;">{{$folder}}</h4>
+    <div>
+      <h2>{{$folder}}</h2>
       {{range $paths}}
       <a href="/{{$folder}}.farto.n/{{.}}.jpg" target="_blank">
         <img src="/{{$folder}}.farto.n.t/{{.}}.jpg" />
