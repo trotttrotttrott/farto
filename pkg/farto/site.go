@@ -39,7 +39,7 @@ const siteTmpl = `<!doctype html>
   </body>
 </html>`
 
-func SiteGenerate() error {
+func SiteGenerate(customTemplatePath *string) error {
 	c, err := getConfig()
 	if err != nil {
 		return err
@@ -55,22 +55,24 @@ func SiteGenerate() error {
 	if err != nil {
 		return err
 	}
-
 	fartos := map[string][]string{}
 	for _, key := range keys {
 		d, f := path.Split(key)
 		d = strings.Trim(d, "/")
 		fartos[d] = append(fartos[d], f)
 	}
-
 	s := site{
 		Title:    c.SiteTitle,
 		Headline: c.SiteHeadline,
 		Copy:     c.SiteCopy,
 		Fartos:   fartos,
 	}
-
-	tmpl, err := template.New("index.html").Parse(siteTmpl)
+	var tmpl *template.Template
+	if *customTemplatePath == "" {
+		tmpl, err = template.New("index.html").Parse(siteTmpl)
+	} else {
+		tmpl, err = template.ParseFiles(*customTemplatePath)
+	}
 	if err != nil {
 		return err
 	}

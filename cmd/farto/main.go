@@ -40,8 +40,9 @@ func siteGenerateCmd() *cli.Command {
 		Use:   "generate",
 		Short: "Generate static site locally.",
 	}
+	customTemplate := cmd.Flags().StringP("custom-template", "t", "", "Path to custom template.")
 	cmd.Run = func(cmd *cli.Command, args []string) error {
-		return farto.SiteGenerate()
+		return farto.SiteGenerate(customTemplate)
 	}
 	return cmd
 }
