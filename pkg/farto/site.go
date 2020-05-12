@@ -18,6 +18,27 @@ type site struct {
 	Fartos   map[string][]string
 }
 
+const siteTmpl = `<!doctype html>
+<html>
+  <head>
+    <title>{{.Title}}</title>
+  </head>
+  <body>
+    <h1>{{.Headline}}</h1>
+    <p>{{.Copy}}</p>
+    {{range $folder, $paths := .Fartos}}
+    <div style="padding: 20px 0;">
+      <h4 style="text-align: left; margin-left: 50px;">{{$folder}}</h4>
+      {{range $paths}}
+      <a href="/{{$folder}}.farto.n/{{.}}.jpg" target="_blank">
+        <img src="/{{$folder}}.farto.n.t/{{.}}.jpg" />
+      </a>
+      {{end}}
+    </div>
+    {{end}}
+  </body>
+</html>`
+
 func SiteGenerate() error {
 	c, err := getConfig()
 	if err != nil {
@@ -48,7 +69,8 @@ func SiteGenerate() error {
 		Copy:     c.SiteCopy,
 		Fartos:   fartos,
 	}
-	tmpl, err := template.ParseFiles("pkg/farto/templates/index.html")
+
+	tmpl, err := template.New("index.html").Parse(siteTmpl)
 	if err != nil {
 		return err
 	}
