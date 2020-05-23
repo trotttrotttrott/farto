@@ -48,7 +48,7 @@ func FartosNormalize(p string) error {
 				}
 				src = imaging.Rotate270(src)
 			} else {
-				src, err = imaging.Open(p)
+				src, err = imaging.Open(p, imaging.AutoOrientation(true))
 				if err != nil {
 					return err
 				}
