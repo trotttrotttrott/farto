@@ -4,29 +4,40 @@ Static site generator for browsing fartos on S3.
 
 ## Commands
 
+### farto site generate
+
 ```
 farto site generate
 ```
 
-Generate static site locally.
+Generate static site locally in `site` directory.
+
+### farto site publish
 
 ```
 farto site publish
 ```
 
-Push your static site to S3.
+Push your static site to S3 from `site` directory. All files in `site` are
+uploaded so you can other files if you want (css, js, or whatever).
+
+### farto fartos normalize
 
 ```
 farto fartos normalize <path>
 ```
 
 Create normalized versions of your fartos. As in, create new image files from
-the originals that are a consistent size and format.
+the originals that are a consistent size and format (jpg).
 
 `path` must be local. The images will be created in sibling directories:
 
 * `<path>.farto.n`
 * `<path>.farto.n.t`
+
+`n` = "normalized", `t` = "thumbnail".
+
+### farto fartos upload
 
 ```
 farto fartos upload <path>
