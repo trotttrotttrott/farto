@@ -1,6 +1,7 @@
 package farto
 
 import (
+	"bytes"
 	"fmt"
 	"image"
 	"os"
@@ -14,6 +15,7 @@ import (
 
 	"github.com/disintegration/imaging"
 	"github.com/jdeng/goheif"
+	"github.com/rwcarlsen/goexif/exif"
 )
 
 func FartosNormalize(p string) error {
@@ -46,7 +48,39 @@ func FartosNormalize(p string) error {
 				if err != nil {
 					return err
 				}
-				src = imaging.Rotate270(src)
+				b, err := goheif.ExtractExif(f)
+				if err != nil {
+					return err
+				}
+				r := bytes.NewReader(b)
+				x, err := exif.Decode(r)
+				if err != nil {
+					return err
+				}
+				o, err := x.Get(exif.Orientation)
+				if err != nil {
+					return err
+				}
+				oi, err := o.Int(0)
+				if err != nil {
+					return err
+				}
+				switch oi {
+				case 2:
+					src = imaging.FlipH(src)
+				case 4:
+					src = imaging.FlipV(src)
+				case 8:
+					src = imaging.Rotate90(src)
+				case 3:
+					src = imaging.Rotate180(src)
+				case 6:
+					src = imaging.Rotate270(src)
+				case 5:
+					src = imaging.Transpose(src)
+				case 7:
+					src = imaging.Transverse(src)
+				}
 			} else {
 				src, err = imaging.Open(p, imaging.AutoOrientation(true))
 				if err != nil {
