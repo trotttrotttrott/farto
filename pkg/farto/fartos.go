@@ -46,7 +46,10 @@ func FartosNormalize(p string) error {
 				}
 				src, err = goheif.Decode(f)
 				if err != nil {
-					return err
+					fmt.Printf("WARNING: There was a problem decoding %s...\n", p)
+					fmt.Printf("WARNING: > %s.\n", err)
+					fmt.Println("WARNING: You'll have to deal with this one manually.")
+					return nil
 				}
 				b, err := goheif.ExtractExif(f)
 				if err != nil {
