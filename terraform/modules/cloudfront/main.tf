@@ -67,9 +67,51 @@ resource "aws_cloudfront_distribution" "farto_cloud" {
         forward = "none"
       }
     }
-    lambda_function_association {
-      event_type = "viewer-request"
-      lambda_arn = "arn:aws:lambda:us-east-1:081549132651:function:fartoCloudAuth:2"
+
+    dynamic "lambda_function_association" {
+      for_each = toset(var.lambda_auth != null ? [0] : [])
+      content {
+        event_type = "viewer-request"
+        lambda_arn = aws_lambda_function.farto_auth.qualified_arn
+      }
     }
+  }
+}
+
+# Lambda@Edge functions must be in us-east-1 for some reason.
+provider "aws" {
+  region = "us-east-1"
+  alias  = "us_east_1"
+}
+
+resource "aws_lambda_function" "farto_auth" {
+  provider      = aws.us_east_1
+  function_name = "farto-auth-${var.subdomain}"
+  filename      = "lambda-auth-${var.subdomain}.zip"
+  role          = var.lambda_role_arn
+  handler       = "lambda-auth-${var.subdomain}.handler"
+  runtime       = "nodejs12.x"
+  publish       = true
+
+  depends_on = [null_resource.lambda_zip]
+}
+
+resource "null_resource" "lambda_zip" {
+  triggers = {
+    template = data.template_file.lambda_auth.rendered
+  }
+  provisioner "local-exec" {
+    command = <<EOC
+echo "${data.template_file.lambda_auth.rendered}" > lambda-auth-${var.subdomain}.js \
+  && zip lambda-auth-${var.subdomain}.zip lambda-auth-${var.subdomain}.js;
+EOC
+  }
+}
+
+data "template_file" "lambda_auth" {
+  template = "${file("${path.module}/lambda-auth.tpl.js")}"
+  vars = {
+    user     = var.lambda_auth.user
+    password = var.lambda_auth.password
   }
 }
