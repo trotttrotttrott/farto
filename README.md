@@ -7,10 +7,13 @@ Static site generator for browsing fartos on S3.
 ### farto site generate
 
 ```
-farto site generate
+farto site generate [-t, --custom-template <path>]
 ```
 
 Generate static site locally in `site` directory.
+
+Optionally use the `--custom-template` flag to use a custom index.html template.
+This is recommended because the default template is super boring.
 
 ### farto site publish
 
