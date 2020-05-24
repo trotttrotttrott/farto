@@ -1,3 +1,7 @@
+locals {
+  lambda_auth_enabled = var.lambda_auth != null
+}
+
 resource "aws_cloudfront_origin_access_identity" "farto_cloud" {
   comment = "access-identity-farto.cloud${var.origin_path}"
 }
@@ -69,10 +73,10 @@ resource "aws_cloudfront_distribution" "farto_cloud" {
     }
 
     dynamic "lambda_function_association" {
-      for_each = toset(var.lambda_auth != null ? [0] : [])
+      for_each = toset(local.lambda_auth_enabled ? [0] : [])
       content {
         event_type = "viewer-request"
-        lambda_arn = aws_lambda_function.farto_auth.qualified_arn
+        lambda_arn = aws_lambda_function.farto_auth[0].qualified_arn
       }
     }
   }
@@ -85,6 +89,9 @@ provider "aws" {
 }
 
 resource "aws_lambda_function" "farto_auth" {
+
+  count = local.lambda_auth_enabled ? 1 : 0
+
   provider      = aws.us_east_1
   function_name = "farto-auth-${var.subdomain}"
   filename      = "lambda-auth-${var.subdomain}.zip"
@@ -97,18 +104,24 @@ resource "aws_lambda_function" "farto_auth" {
 }
 
 resource "null_resource" "lambda_zip" {
+
+  count = local.lambda_auth_enabled ? 1 : 0
+
   triggers = {
-    template = data.template_file.lambda_auth.rendered
+    template = data.template_file.lambda_auth[0].rendered
   }
   provisioner "local-exec" {
     command = <<EOC
-echo "${data.template_file.lambda_auth.rendered}" > lambda-auth-${var.subdomain}.js \
+echo "${data.template_file.lambda_auth[0].rendered}" > lambda-auth-${var.subdomain}.js \
   && zip lambda-auth-${var.subdomain}.zip lambda-auth-${var.subdomain}.js;
 EOC
   }
 }
 
 data "template_file" "lambda_auth" {
+
+  count = local.lambda_auth_enabled ? 1 : 0
+
   template = "${file("${path.module}/lambda-auth.tpl.js")}"
   vars = {
     user     = var.lambda_auth.user
