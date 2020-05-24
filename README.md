@@ -64,3 +64,11 @@ siteCopy: |- # Content for p tag right below h1 tag
 
 Basic auth with Lambda & Cloudfront. Got the idea from [this blog
 post](https://medium.com/hackernoon/serverless-password-protecting-a-static-website-in-an-aws-s3-bucket-bfaaa01b8666).
+
+## Terraform
+
+The [terraform](./terraform) directory contains modules for creating all
+necessary AWS resources.
+
+[terraform/main.example.tf](./terraform/main.example.tf) is an example of how
+you can use them.
