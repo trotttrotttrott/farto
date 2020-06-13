@@ -1,6 +1,7 @@
 package farto
 
 import (
+	"mime"
 	"net/http"
 	"os"
 	"path"
@@ -49,12 +50,15 @@ func upload(svc s3iface.S3API, bucket string, prefix string, localDir string, pr
 			if err != nil {
 				return err
 			}
-			buffer := make([]byte, 512)
-			_, err = f.Read(buffer)
-			if err != nil {
-				return err
+			contentType := mime.TypeByExtension(filepath.Ext(f.Name()))
+			if contentType == "" {
+				buffer := make([]byte, 512)
+				_, err = f.Read(buffer)
+				if err != nil {
+					return err
+				}
+				contentType = http.DetectContentType(buffer)
 			}
-			contentType := http.DetectContentType(buffer)
 			_, err = f.Seek(0, 0)
 			if err != nil {
 				return err
