@@ -35,7 +35,7 @@ func walkBucket(svc s3iface.S3API, bucket string, prefix string) (keys []string,
 	return
 }
 
-func upload(svc s3iface.S3API, bucket string, prefix string, localDir string) error {
+func upload(svc s3iface.S3API, bucket string, prefix string, localDir string, preservePath bool) error {
 
 	uploader := s3manager.NewUploaderWithClient(svc)
 	var objects []s3manager.BatchUploadObject
@@ -59,8 +59,12 @@ func upload(svc s3iface.S3API, bucket string, prefix string, localDir string) er
 			if err != nil {
 				return err
 			}
-			dir := filepath.Base(filepath.Dir(p))
-			key := path.Join(prefix, dir, info.Name())
+			var key string
+			if preservePath {
+				key = path.Join(prefix, p)
+			} else {
+				key = path.Join(prefix, filepath.Base(filepath.Dir(p)), info.Name())
+			}
 			objects = append(
 				objects,
 				s3manager.BatchUploadObject{

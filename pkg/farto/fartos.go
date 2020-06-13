@@ -120,7 +120,7 @@ func FartosUpload(p string) error {
 		if err != nil {
 			return err
 		}
-		err = upload(svc, c.S3Bucket, c.S3Prefix, dir)
+		err = upload(svc, c.S3Bucket, c.S3Prefix, dir, false)
 		if err != nil {
 			return err
 		}
