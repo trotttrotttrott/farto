@@ -39,6 +39,7 @@ func siteGenerateCmd() *cli.Command {
 	cmd := &cli.Command{
 		Use:   "generate",
 		Short: "Generate static site locally.",
+		Args:  cli.ArgsExact(0),
 	}
 	customTemplate := cmd.Flags().StringP("custom-template", "t", "", "Path to custom template.")
 	cmd.Run = func(cmd *cli.Command, args []string) error {
@@ -51,6 +52,7 @@ func sitePublishCmd() *cli.Command {
 	cmd := &cli.Command{
 		Use:   "publish",
 		Short: "Publish static site to S3.",
+		Args:  cli.ArgsExact(0),
 	}
 	cmd.Run = func(cmd *cli.Command, args []string) error {
 		return farto.SitePublish()
@@ -74,8 +76,9 @@ func fartosCmd() *cli.Command {
 
 func fartosNormalizeCmd() *cli.Command {
 	cmd := &cli.Command{
-		Use:   "normalize",
+		Use:   "normalize <path>",
 		Short: "Create normalized versions of your fartos.",
+		Args:  cli.ArgsExact(1),
 	}
 	cmd.Run = func(cmd *cli.Command, args []string) error {
 		p := args[0]
@@ -86,8 +89,9 @@ func fartosNormalizeCmd() *cli.Command {
 
 func fartosUploadCmd() *cli.Command {
 	cmd := &cli.Command{
-		Use:   "upload",
+		Use:   "upload <path>",
 		Short: "Upload original and normalized photos to S3.",
+		Args:  cli.ArgsExact(1),
 	}
 	cmd.Run = func(cmd *cli.Command, args []string) error {
 		p := args[0]
