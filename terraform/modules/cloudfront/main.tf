@@ -1,3 +1,11 @@
+terraform {
+  required_providers {
+    dnsimple = {
+      source = "dnsimple/dnsimple"
+    }
+  }
+}
+
 locals {
   lambda_auth_enabled = var.lambda_auth != null
 }
@@ -122,7 +130,7 @@ data "template_file" "lambda_auth" {
 
   count = local.lambda_auth_enabled ? 1 : 0
 
-  template = "${file("${path.module}/lambda-auth.tpl.js")}"
+  template = file("${path.module}/lambda-auth.tpl.js")
   vars = {
     user     = var.lambda_auth.user
     password = var.lambda_auth.password
