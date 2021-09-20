@@ -60,29 +60,30 @@ func FartosNormalize(p string) error {
 				if err != nil {
 					return err
 				}
-				o, err := x.Get(exif.Orientation)
-				if err != nil {
-					return err
-				}
-				oi, err := o.Int(0)
-				if err != nil {
-					return err
-				}
-				switch oi {
-				case 2:
-					src = imaging.FlipH(src)
-				case 4:
-					src = imaging.FlipV(src)
-				case 8:
-					src = imaging.Rotate90(src)
-				case 3:
-					src = imaging.Rotate180(src)
-				case 6:
-					src = imaging.Rotate270(src)
-				case 5:
-					src = imaging.Transpose(src)
-				case 7:
-					src = imaging.Transverse(src)
+				// Sometimes 'Orientation' isn't present.
+				// Swallow error and move on.
+				o, _ := x.Get(exif.Orientation)
+				if o != nil {
+					oi, err := o.Int(0)
+					if err != nil {
+						return err
+					}
+					switch oi {
+					case 2:
+						src = imaging.FlipH(src)
+					case 4:
+						src = imaging.FlipV(src)
+					case 8:
+						src = imaging.Rotate90(src)
+					case 3:
+						src = imaging.Rotate180(src)
+					case 6:
+						src = imaging.Rotate270(src)
+					case 5:
+						src = imaging.Transpose(src)
+					case 7:
+						src = imaging.Transverse(src)
+					}
 				}
 			} else {
 				src, err = imaging.Open(p, imaging.AutoOrientation(true))
