@@ -32,6 +32,7 @@ func FartosNormalize(p string) error {
 		if err != nil {
 			return err
 		}
+		delete(versions, dirSuffix)
 		versions[dir] = size
 	}
 
@@ -46,14 +47,15 @@ func FartosNormalize(p string) error {
 		switch strings.ToLower(path.Ext(info.Name())) {
 
 		case ".mov", ".mp4":
-			cmd := exec.Command("ffmpeg", "-i", p, "-frames:v", "1", "-")
-			var buff bytes.Buffer
-			cmd.Stdout = &buff
+			cmd := exec.Command("ffmpeg", "-i", p, "-frames:v", "1", "-f", "image2", "-")
+			var outb, errb bytes.Buffer
+			cmd.Stdout = &outb
+			cmd.Stderr = &errb
 			err := cmd.Run()
 			if err != nil {
-				return err
+				return fmt.Errorf("%w\n%s", err, errb.String())
 			}
-			src, _, err = image.Decode(bytes.NewReader(buff.Bytes()))
+			src, _, err = image.Decode(bytes.NewReader(outb.Bytes()))
 			if err != nil {
 				return err
 			}
