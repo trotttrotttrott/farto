@@ -40,6 +40,8 @@ the originals that are a consistent size and format (jpg).
 
 `n` = "normalized", `t` = "thumbnail".
 
+_`ffmpeg` is required if there are ".mov" or ".mp4" files in <path>._
+
 ### farto fartos upload
 
 ```

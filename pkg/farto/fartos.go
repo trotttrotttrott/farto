@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"image"
 	"os"
+	"os/exec"
 	"path"
 	"path/filepath"
 	"strings"
@@ -43,6 +44,20 @@ func FartosNormalize(p string) error {
 		var src image.Image
 
 		switch strings.ToLower(path.Ext(info.Name())) {
+
+		case ".mov", ".mp4":
+			cmd := exec.Command("ffmpeg", "-i", p, "-frames:v", "1", "-")
+			var buff bytes.Buffer
+			cmd.Stdout = &buff
+			err := cmd.Run()
+			if err != nil {
+				return err
+			}
+			src, _, err = image.Decode(bytes.NewReader(buff.Bytes()))
+			if err != nil {
+				return err
+			}
+
 		case ".heic":
 			f, err := os.Open(p)
 			if err != nil {
@@ -89,6 +104,7 @@ func FartosNormalize(p string) error {
 					src = imaging.Transverse(src)
 				}
 			}
+
 		default:
 			src, err = imaging.Open(p, imaging.AutoOrientation(true))
 			if err != nil {
