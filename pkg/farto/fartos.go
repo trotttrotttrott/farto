@@ -14,8 +14,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 
+	"github.com/adrium/goheif"
 	"github.com/disintegration/imaging"
-	"github.com/jdeng/goheif"
 	"github.com/rwcarlsen/goexif/exif"
 )
 
