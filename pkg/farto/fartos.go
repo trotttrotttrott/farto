@@ -34,69 +34,69 @@ func FartosNormalize(p string) error {
 	}
 
 	err := filepath.Walk(p, func(p string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
+
 		if !info.IsDir() {
-			var src image.Image
-			if strings.ToLower(path.Ext(info.Name())) == ".heic" {
-				f, err := os.Open(p)
+			return nil // don't bother with recursion
+		}
+
+		var src image.Image
+		if strings.ToLower(path.Ext(info.Name())) == ".heic" {
+			f, err := os.Open(p)
+			if err != nil {
+				return err
+			}
+			src, err = goheif.Decode(f)
+			if err != nil {
+				fmt.Printf("WARNING: There was a problem decoding %s...\n", p)
+				fmt.Printf("WARNING: > %s.\n", err)
+				fmt.Println("WARNING: You'll have to deal with this one manually.")
+				return nil
+			}
+			b, err := goheif.ExtractExif(f)
+			if err != nil {
+				return err
+			}
+			r := bytes.NewReader(b)
+			x, err := exif.Decode(r)
+			if err != nil {
+				return err
+			}
+			// Sometimes 'Orientation' isn't present.
+			// Swallow error and move on.
+			o, _ := x.Get(exif.Orientation)
+			if o != nil {
+				oi, err := o.Int(0)
 				if err != nil {
 					return err
 				}
-				src, err = goheif.Decode(f)
-				if err != nil {
-					fmt.Printf("WARNING: There was a problem decoding %s...\n", p)
-					fmt.Printf("WARNING: > %s.\n", err)
-					fmt.Println("WARNING: You'll have to deal with this one manually.")
-					return nil
-				}
-				b, err := goheif.ExtractExif(f)
-				if err != nil {
-					return err
-				}
-				r := bytes.NewReader(b)
-				x, err := exif.Decode(r)
-				if err != nil {
-					return err
-				}
-				// Sometimes 'Orientation' isn't present.
-				// Swallow error and move on.
-				o, _ := x.Get(exif.Orientation)
-				if o != nil {
-					oi, err := o.Int(0)
-					if err != nil {
-						return err
-					}
-					switch oi {
-					case 2:
-						src = imaging.FlipH(src)
-					case 4:
-						src = imaging.FlipV(src)
-					case 8:
-						src = imaging.Rotate90(src)
-					case 3:
-						src = imaging.Rotate180(src)
-					case 6:
-						src = imaging.Rotate270(src)
-					case 5:
-						src = imaging.Transpose(src)
-					case 7:
-						src = imaging.Transverse(src)
-					}
-				}
-			} else {
-				src, err = imaging.Open(p, imaging.AutoOrientation(true))
-				if err != nil {
-					return err
+				switch oi {
+				case 2:
+					src = imaging.FlipH(src)
+				case 4:
+					src = imaging.FlipV(src)
+				case 8:
+					src = imaging.Rotate90(src)
+				case 3:
+					src = imaging.Rotate180(src)
+				case 6:
+					src = imaging.Rotate270(src)
+				case 5:
+					src = imaging.Transpose(src)
+				case 7:
+					src = imaging.Transverse(src)
 				}
 			}
-			for size, dir := range versions {
-				img := imaging.Resize(src, 0, size, imaging.Lanczos)
-				err = imaging.Save(img, path.Join(dir, fmt.Sprintf("%s.jpg", info.Name())))
-				if err != nil {
-					return err
-				}
+		} else {
+			src, err = imaging.Open(p, imaging.AutoOrientation(true))
+			if err != nil {
+				return err
+			}
+		}
+		for size, dir := range versions {
+			img := imaging.Resize(src, 0, size, imaging.Lanczos)
+			err = imaging.Save(img, path.Join(dir, fmt.Sprintf("%s.jpg", info.Name())))
+			if err != nil {
+				return err
 			}
 		}
 		return nil
