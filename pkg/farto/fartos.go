@@ -37,7 +37,7 @@ func FartosNormalize(p string) error {
 
 	err := filepath.Walk(p, func(p string, info os.FileInfo, err error) error {
 
-		if !info.IsDir() {
+		if info.IsDir() {
 			return nil // don't bother with recursion
 		}
 
