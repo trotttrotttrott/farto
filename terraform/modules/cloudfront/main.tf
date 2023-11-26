@@ -7,7 +7,11 @@ terraform {
 }
 
 locals {
+
   lambda_auth_enabled = var.lambda_auth != null
+
+  dns_name = var.domain_root ? "" : var.name
+  dns_type = var.domain_root ? "ALIAS" : "CNAME"
 }
 
 resource "aws_cloudfront_origin_access_identity" "farto_cloud" {
@@ -15,10 +19,10 @@ resource "aws_cloudfront_origin_access_identity" "farto_cloud" {
 }
 
 resource "dnsimple_record" "farto_cloud" {
-  domain = "farto.cloud"
-  name   = var.subdomain
+  domain = var.domain
+  name   = local.dns_name
   value  = aws_cloudfront_distribution.farto_cloud.domain_name
-  type   = "CNAME"
+  type   = local.dns_type
 }
 
 resource "aws_cloudfront_distribution" "farto_cloud" {
@@ -47,7 +51,7 @@ resource "aws_cloudfront_distribution" "farto_cloud" {
   }
 
   viewer_certificate {
-    acm_certificate_arn            = "arn:aws:acm:us-east-1:081549132651:certificate/cdb6e100-6cd2-41f8-9bec-56ac0fd03293"
+    acm_certificate_arn            = var.acm_certificate_arn
     cloudfront_default_certificate = false
     minimum_protocol_version       = "TLSv1.2_2018"
     ssl_support_method             = "sni-only"
@@ -101,11 +105,11 @@ resource "aws_lambda_function" "farto_auth" {
   count = local.lambda_auth_enabled ? 1 : 0
 
   provider      = aws.us_east_1
-  function_name = "farto-auth-${var.subdomain}"
-  filename      = "lambda-auth-${var.subdomain}.zip"
+  function_name = "farto-auth-${var.name}"
+  filename      = "lambda-auth-${var.name}.zip"
   role          = var.lambda_role_arn
-  handler       = "lambda-auth-${var.subdomain}.handler"
-  runtime       = "nodejs12.x"
+  handler       = "lambda-auth-${var.name}.handler"
+  runtime       = "nodejs18.x"
   publish       = true
 
   depends_on = [null_resource.lambda_zip]
@@ -120,8 +124,8 @@ resource "null_resource" "lambda_zip" {
   }
   provisioner "local-exec" {
     command = <<EOC
-echo "${data.template_file.lambda_auth[0].rendered}" > lambda-auth-${var.subdomain}.js \
-  && zip lambda-auth-${var.subdomain}.zip lambda-auth-${var.subdomain}.js;
+echo "${data.template_file.lambda_auth[0].rendered}" > lambda-auth-${var.name}.js \
+  && zip lambda-auth-${var.name}.zip lambda-auth-${var.name}.js;
 EOC
   }
 }
