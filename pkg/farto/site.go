@@ -100,6 +100,5 @@ func SitePublish() error {
 		return err
 	}
 	svc := s3.New(sess)
-	upload(svc, c.S3Bucket, c.S3Prefix, "site", true)
-	return nil
+	return upload(svc, c.S3Bucket, c.S3Prefix, "site", true)
 }
