@@ -15,25 +15,36 @@ import (
 )
 
 func walkBucket(svc s3iface.S3API, bucket string, prefix string) (keys []string, err error) {
-	resp, err := svc.ListObjectsV2(
-		&s3.ListObjectsV2Input{
-			Bucket: aws.String(bucket),
-			Prefix: aws.String(prefix),
-		},
-	)
-	if err != nil {
-		return
-	}
-	for _, item := range resp.Contents {
-		key := strings.TrimPrefix(*item.Key, prefix)
-		d, f := path.Split(key)
-		if !strings.HasPrefix(d, "/site/") &&
-			path.Ext(f) != "" &&
-			!strings.Contains(d, ".farto.") {
-			keys = append(keys, key)
+	var continuationToken *string
+	for {
+		resp, err := svc.ListObjectsV2(
+			&s3.ListObjectsV2Input{
+				Bucket:            aws.String(bucket),
+				Prefix:            aws.String(prefix),
+				MaxKeys:           aws.Int64(1000),
+				ContinuationToken: continuationToken,
+			},
+		)
+		if err != nil {
+			return nil, err
 		}
+		for _, item := range resp.Contents {
+
+			key := strings.TrimPrefix(*item.Key, prefix)
+			d, f := path.Split(key)
+
+			if !strings.HasPrefix(d, "/site/") &&
+				path.Ext(f) != "" &&
+				!strings.Contains(d, ".farto.") {
+				keys = append(keys, key)
+			}
+		}
+		if !aws.BoolValue(resp.IsTruncated) {
+			break
+		}
+		continuationToken = resp.NextContinuationToken
 	}
-	return
+	return keys, nil
 }
 
 func upload(svc s3iface.S3API, bucket string, prefix string, localDir string, preservePath bool) error {
