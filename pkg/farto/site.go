@@ -39,7 +39,7 @@ const siteTmpl = `<!doctype html>
   </body>
 </html>`
 
-func SiteGenerate(customTemplatePath *string) error {
+func SiteGenerate(customTemplatePath *string, outputPath *string) error {
 	c, err := getConfig()
 	if err != nil {
 		return err
@@ -80,7 +80,13 @@ func SiteGenerate(customTemplatePath *string) error {
 	if err != nil {
 		return err
 	}
-	f, err := os.Create("site/index.html")
+
+	fname := "site/index.html"
+	if *outputPath != "" {
+		fname = *outputPath
+	}
+
+	f, err := os.Create(fname)
 	if err != nil {
 		return err
 	}

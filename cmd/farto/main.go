@@ -42,8 +42,9 @@ func siteGenerateCmd() *cli.Command {
 		Args:  cli.ArgsExact(0),
 	}
 	customTemplate := cmd.Flags().StringP("custom-template", "t", "", "Path to custom template.")
+	outputPath := cmd.Flags().StringP("output-path", "o", "", "Path to output rendered template.")
 	cmd.Run = func(cmd *cli.Command, args []string) error {
-		return farto.SiteGenerate(customTemplate)
+		return farto.SiteGenerate(customTemplate, outputPath)
 	}
 	return cmd
 }
